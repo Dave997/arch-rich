@@ -122,10 +122,10 @@ At this point we have to mount all the partitions, in order to be used, otherwis
 ``` bash
     mount /dev/sda3 /mnt
     mkdir /mnt/home
-    mkdir /mnt/boot
+    mkdir /mnt/efi
     #now you can check with "ls /mnt" if everything is fine
 
-    mount /dev/sda1 /mnt/boot
+    mount /dev/sda1 /mnt/efi
     mount /dev/sda4 /mnt/home
 ```
 
@@ -205,5 +205,6 @@ Network configuration
     127.0.0.1   localhost
     ::1         locahost
     <whateverip  myhostname.localdomain myhostname>
+```
 
 Now we can go back to the usb key with `exit` command and then `umount -R /mnt`, so we can safely reboot.
