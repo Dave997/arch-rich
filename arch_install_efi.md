@@ -1,8 +1,8 @@
 # Arch installation guide
 
 ## 1. Create a bootable USB
-Plug in the usb key, and detect it with the ```lsblk``` command, 
-Once done, start the procedure to burn the img file
+Plug in the usb key, and detect it with the ```lsblk``` command.<br> 
+Once done, start the procedure to burn the img file:
 ``` bash
     sudo su
     dd if=<arch iso path> of=<usb key, e.g. /dev/sdb> status="progress"
@@ -203,6 +203,12 @@ Network configuration
     <whateverip  myhostname.localdomain myhostname>
 ```
 
+Create an initial ramdisk based on the 'linux' preset.
+<br>For more info check the manual page:<br>https://git.archlinux.org/mkinitcpio.git/tree/man/mkinitcpio.8.txt<br>https://wiki.archlinux.org/index.php/mkinitcpio
+``` bash
+    mkinitcpio -p linux
+``` 
+
 ## 7. Install Bootloader
 For first install grub
 ``` bash
@@ -220,6 +226,9 @@ If yes, we can proceed with the grub configuration:
 ``` bash
     grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/boot/efi
     grub-mkconfig -o /boot/grub/grub.cfg
+
+    #confirm that grub has installed
+    ls -l /boot/EFI/arch
 ```
 ``` bash
     #at this poit the system should be ready to go, but this step will be useful to avoid possibile efi errors
