@@ -50,3 +50,14 @@ This will remove unused packages (used during system installation)
 if there are some errors google them and try to fix them.
 
 https://www.youtube.com/watch?v=jW4GFGOIUjc
+
+## 8. Install Audio codecs
+
+`pacman -S a52dec faac faad2 flac jasper lame libdca libdv libmad libmpeg2 libtheora libvorbis libxv wavpack x264 xvidcore gstreamer0.10-plugins`
+
+However, installing `vlc`, all many necessary codecs are installed 
+
+## 9. GUI for pacman
+
+`yaourt -S pamac-aur`
+
