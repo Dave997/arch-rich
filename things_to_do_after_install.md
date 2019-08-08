@@ -1,5 +1,13 @@
 # After installation useful tips
 
+## 0. Set keyboard format if required
+
+Read all keymaps
+> localectl list-keymaps
+
+Set keymap (**it** for italian keyboard)
+> localectl set-keymap --no-convert keymap
+
 ## 1. Install a LTS kernel
 > This kernel is useful if you prefer the stability of less-frequent kernel updates or if you want a fallback kernel in case a new kernel version causes problem.
 https://www.youtube.com/watch?v=b-H3jURTgqk
@@ -61,3 +69,20 @@ However, installing `vlc`, all many necessary codecs are installed
 
 `yaourt -S pamac-aur`
 
+## 10. Check video drivers
+### Intel drivers
+`https://wiki.archlinux.org/index.php/Intel_graphics` <br>
+`https://wiki.archlinux.org/index.php/Intel_graphics_(Italiano)`
+```bash
+sudo pacman -S xf86-video-intel
+```
+
+### Nvidia drivers
+Check arch wiki to find the rigth drivers: `https://wiki.archlinux.org/index.php/NVIDIA` <br>
+`https://wiki.archlinux.org/index.php/NVIDIA_(Italiano)`
+
+```bash
+#this works on my specific machine 
+sudo pacman -R lib32-mesa-libgl
+sudo pacman -S nvidia lib32-nvidia-libgl
+```

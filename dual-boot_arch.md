@@ -46,3 +46,9 @@ N.B. If your system is configured to skip the GRUB menu, then pres `esc` or `shi
 -------
 Check forlder configs here<br>
 https://www.howtogeek.com/howto/35807/how-to-harmonize-your-dual-boot-setup-for-windows-and-ubuntu/
+
+## Automount NTFS win partition
+N.B. Check your system configuration before, and change the command accordingly!
+```bash
+sudo sh -c "sudo echo \"/dev/sdb1 /run/media/data ntfs-3g root,uid=1000,gid=users 0 0\" >> /etc/fstab"
+```
