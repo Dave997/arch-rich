@@ -27,6 +27,8 @@ pacman -Syu --noconfirm --needed dialog ||  error "Please check if the following
     * Available internet connection 
     * Arch keyring updated"
 
+#TODO: Check internet connectivity  ex: ping -c 1 www.archlinux.org
+
 # Welcome user.
 welcomemsg || error "User exited."
 

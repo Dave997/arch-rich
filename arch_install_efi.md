@@ -17,8 +17,13 @@ This guide is only for UEFI systems (with GPT).
 To be sure that is uefi check if that folder exists
 ``` bash 
     ls /sys/firmware/efi/efivars
-    # if some files are displayed, it means that your pc has UEFI system
+
+    # OR
+
+    efivar -l
 ```
+if some files are displayed, it means that your pc has UEFI system
+
 ------
 
 Now reboot and begin the installation process
@@ -34,57 +39,40 @@ Let's make some checks before start:
 
 N.B. now if you don't know your file system (UEFI or not), it's the last chance to check it.
 
-Let's assume that the hard disk is the **/dev/sda** device (you can have a different one, but most of the time this is the letters that you have). And disk size of 15GB.
+Let's assume that the hard disk is the **/dev/sda** device (you can have a different one, but most of the time this is the letters that you have). And disk size of 150GB.
 
-For first, open the interactive tool ```fdisk /dev/sda``` (you can check all disks avai)
+For first, open the interactive tool ```cgdisk /dev/sda``` (you can check all disks available)
 
-(If there is any useless partition, you can use ```d``` command to delete it)
+N.B. you can use **gdisk** (ex: type `x` and after `z` to erase the entire disk)
 
-Let's create partitions:
+Check GUID codes: `https://askubuntu.com/questions/703443/gdisk-hex-codes`
 
-N.B If you have some oddments of old partitions, this tool will ask you to remove the signature, so you can just type ```Y```.
+|RAM size (GiB) | SWAP size (GiB) |
+|--------|--------|
+|   < 2   |   2 or 3 times RAM size   |
+|  2 <-> 8 | equal to RAM size | 
+|   8 >   |  0.5 times RAM size |
 
-*EFI partition*
-```bash
-    n #create new partition
-    p #or just enter
-    #now just enter to assign 1
-    #enter again to let the partition start from the beginning
-    +512M #in this case I gave 512megabytes to the first partition
-```
+### Partitions:
+* **Boot partition**: <br>
+Size: 1GiB <br>
+GUID: ef00 <br>
+Name: boot <br>
 
-*swap partition*
-``` bash
-    n
-    p #or enter
-    2 #or enter
-    #enter
-    +2G #tip: the recommended amount of swap is usually 150% of the RAM size
-```
+* **Swap partition**: <br>
+Size: 8GiB <br>
+GUID: 8200 <br>
+Name: swap <br>
 
-Check partitions with ```p```
+* **Root partition**: <br>
+Size: 41GiB <br>
+GUID: 8300 <br>
+Name: root <br>
 
-*root partition*
-``` bash
-    n
-    p #or enter
-    3 #or enter
-    #enter
-    +7G # in that partition will be stored all the applications
-```
-
-*home partition*
-``` bash
-    n
-    p 
-    3 #or enter
-    #enter
-    # enter to fill it up with all the rest of the space (or just type the size)
-    # in that partition will be stored all your files
-```
-
-Check partitions with ```p```.
-If it's everything fine, type ```w``` to write changes.
+* **Home partition**: <br>
+Size: 100GiB <br>
+GUID: 8302 <br>
+Name: home <br>
 
 Now you can check the partitions with ```lsblk```.
 
@@ -93,7 +81,7 @@ N.B. The tipycal file system in linux is **ext4**.
 
 *EFI partition file system*
 ``` bash
-    mkfs.fat -F32 /dev/sda1
+    mkfs.vfat -F32 /dev/sda1
 ```
 
 *Root partition file system*
@@ -116,11 +104,12 @@ Now we can set up the swap
 At this point we have to mount all the partitions, in order to be used, otherwise we won't be able to install anything
 
 ``` bash
-    mount /dev/sda3 /mnt
-    mkdir /mnt/home
-    #now you can check with "ls /mnt" if everything is fine
+    mkdir /mnt/boot /mnt/home
 
+    mount /dev/sda3 /mnt
+    mount /dev/sda1 /mnt/boot
     mount /dev/sda4 /mnt/home
+    #now you can check with "ls /mnt" if everything is fine
 ```
 
 Check with ```lsblk``` that everything is mounted fine.
@@ -162,6 +151,8 @@ Set language
     vim /etc/locale.conf #create new file
     #and type
         LANG=en_US.UTF-8
+
+    export LANG=en_US.UTF-8
 ``` 
 
 (optional) Set keyboard 
@@ -192,15 +183,47 @@ Network configuration
     <whateverip  myhostname.localdomain myhostname>
 ```
 
+Add 32-bit app compatibility in pacman:
+```bash
+vim /etc/pacman.conf
+
+# Uncomment:
+#
+#   [multilib]
+#   Include = /etc/pacman.d/mirrorlist
+
+pacman -Syy 
+```
+
 Create an initial ramdisk based on the 'linux' preset.
 <br>For more info check the manual page:<br>https://git.archlinux.org/mkinitcpio.git/tree/man/mkinitcpio.8.txt<br>https://wiki.archlinux.org/index.php/mkinitcpio
 ``` bash
     mkinitcpio -p linux
 ``` 
 
+### (Optional) Add user
+```bash
+useradd -m -g users -G wheel,storage,power -s /bin/bash <username>
+passwd <username>
+
+# add user to sudoers
+EDITOR=vim visudo
+# Uncomment:
+# %wheel ALL=(ALL) ALL
+``` 
+
 ## 7. Install Bootloader
+(Optional) Get commands completion:
+``` bash
+    pacman -S bash-completion
+```
+
 For first install grub
 ``` bash
+# Initial check:
+    mount -t efivarfs efivarfs /sys/firmware/efi/efivars
+    # this should give already mounted error
+    
     pacman -S grub efibootmgr
 ``` 
 
