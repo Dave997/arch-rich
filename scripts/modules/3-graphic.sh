@@ -23,8 +23,11 @@ PKGS=(
         'ttf-inconsolata'       # Font
         'ttf-linux-libertine'   # Font
         'i3-gaps'               # UI - Window manager
-        'i3blocks'              # Status bar
+        'i3blocks'              # Status bar items
         'i3lock'                # Screen lock
+		'i3status'              # Generates status bar
+		'compton'			 	# screen composer manager
+		'slim'					# Login manager
 )
 
 for PKG in "${PKGS[@]}"; do
@@ -56,7 +59,7 @@ installationloop() { \
 		esac
 	done < /tmp/progs.csv
 }
-
+ 
 
 manualinstall $aurhelper || error "Failed to install AUR helper."
 
@@ -81,3 +84,19 @@ AUR_PKGS=(
 	sudo -u "$name" makepkg --noconfirm -si >/dev/null 2>&1
 	cd /tmp || return
 ) 
+
+
+
+# Configure SLiM
+https://wiki.archlinux.org/index.php/SLiM
+
+sudo systemctl enable slim.service
+
+https://www.gnome-look.org/p/1237548/
+
+
+# Configure i3lock
+scrot /tmp/screen.png  
+xwobf -s 11 /tmp/screen.png  
+i3lock -i /tmp/screen.png  
+rm /tmp/screen.png

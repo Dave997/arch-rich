@@ -41,21 +41,22 @@ N.B. now if you don't know your file system (UEFI or not), it's the last chance 
 
 Let's assume that the hard disk is the **/dev/sda** device (you can have a different one, but most of the time this is the letters that you have). And disk size of 150GB.
 
-For first, open the interactive tool ```cgdisk /dev/sda``` (you can check all disks available)
+N.B. you can use `gdisk /dev/sda` and type `x` and after `z`, to erase the entire disk.
 
-N.B. you can use **gdisk** (ex: type `x` and after `z` to erase the entire disk)
+For first, open the interactive tool ```cgdisk /dev/sda``` (you can check all disks available)
 
 Check GUID codes: `https://askubuntu.com/questions/703443/gdisk-hex-codes`
 
-|RAM size (GiB) | SWAP size (GiB) |
+|RAM size (GiB) | SWAP size |
 |--------|--------|
 |   < 2   |   2 or 3 times RAM size   |
-|  2 <-> 8 | equal to RAM size | 
-|   8 >   |  0.5 times RAM size |
+|  2 <-> 8 | equal to RAM size or 2 times | 
+|   8 <-> 64   |  0.5 or 1.5 times RAM size |
+|   64 >   |  4GiB |
 
 ### Partitions:
 * **Boot partition**: <br>
-Size: 1GiB <br>
+Size: 1024MiB <br>
 GUID: ef00 <br>
 Name: boot <br>
 
@@ -66,13 +67,14 @@ Name: swap <br>
 
 * **Root partition**: <br>
 Size: 41GiB <br>
-GUID: 8300 <br>
+GUID: enter (default 8300) <br>
 Name: root <br>
 
 * **Home partition**: <br>
 Size: 100GiB <br>
-GUID: 8302 <br>
+GUID: enter (default 8300) <br>
 Name: home <br>
+
 
 Now you can check the partitions with ```lsblk```.
 
@@ -81,7 +83,7 @@ N.B. The tipycal file system in linux is **ext4**.
 
 *EFI partition file system*
 ``` bash
-    mkfs.vfat -F32 /dev/sda1
+    mkfs.fat -F32 /dev/sda1
 ```
 
 *Root partition file system*
@@ -104,9 +106,8 @@ Now we can set up the swap
 At this point we have to mount all the partitions, in order to be used, otherwise we won't be able to install anything
 
 ``` bash
-    mkdir /mnt/boot /mnt/home
-
     mount /dev/sda3 /mnt
+    mkdir /mnt/boot /mnt/home
     mount /dev/sda1 /mnt/boot
     mount /dev/sda4 /mnt/home
     #now you can check with "ls /mnt" if everything is fine
@@ -129,6 +130,16 @@ Basically we have to create an fstab file, which automatically mount all the par
     genfstab -U -p /mnt >> /mnt/etc/fstab
 ``` 
 
+Check if swap is recognized correctly
+``` bash
+    cat /mnt/etc/fstab
+
+    # Should be something like this:
+    /dev/sda2 none swap defaults 0 0
+    or
+    UUID=********-****-****-****-************ none swap defaults 0 0
+``` 
+
 Now we have to let arch start on the /mnt folder
 ``` bash
     arch-chroot /mnt
@@ -138,7 +149,7 @@ With this command now we've switched from our usb key to the new arch system.
 Arch linux by default doesn't have a network manager, so we install it
 ``` bash
     pacman -S networkmanager
-    systemctl enable NetworkManager
+    systemctl enable NetworkManager.service
 ``` 
 
 Set a root password ```passwd```.
@@ -195,11 +206,26 @@ vim /etc/pacman.conf
 pacman -Syy 
 ```
 
+Make sure that wifi-menu will work after reboot
+``` bash
+    pacman -S dialog network-manager-applet networkmanager-openvpn wireless_tools wpa_supplicant wpa_actiond
+``` 
+
+Enable DHCP
+``` bash
+    systemctl enable dhcpcd@<interface>.service
+``` 
+
 Create an initial ramdisk based on the 'linux' preset.
 <br>For more info check the manual page:<br>https://git.archlinux.org/mkinitcpio.git/tree/man/mkinitcpio.8.txt<br>https://wiki.archlinux.org/index.php/mkinitcpio
 ``` bash
     mkinitcpio -p linux
 ``` 
+### Only for SSD 
+Enable TRIM support
+```bash
+systemctl enable fstrim.timer
+```
 
 ### (Optional) Add user
 ```bash
@@ -207,7 +233,7 @@ useradd -m -g users -G wheel,storage,power -s /bin/bash <username>
 passwd <username>
 
 # add user to sudoers
-EDITOR=vim visudo
+EDITOR=nano visudo
 # Uncomment:
 # %wheel ALL=(ALL) ALL
 ``` 
@@ -216,14 +242,108 @@ EDITOR=vim visudo
 (Optional) Get commands completion:
 ``` bash
     pacman -S bash-completion
-```
 
-For first install grub
-``` bash
 # Initial check:
     mount -t efivarfs efivarfs /sys/firmware/efi/efivars
     # this should give already mounted error
-    
+```
+
+### Method 1 - Systemd-boot
+Install bootloader
+``` bash
+    pacman -S efibootmgr
+    bootctl --path=/boot install
+``` 
+
+Create boot entries file
+``` bash
+    vim /boot/loader/entries/arch.conf
+
+    # type:
+    title Arch Linux
+    linux /vmlinuz-linux
+    initrd /initramfs-linux.img
+``` 
+
+Make sure that the system files are recognized as bootable
+``` bash
+    echo "options root=PARTUUID=$(blkid -s PARTUUID -o value /dev/sda3) rw" >> /boot/loader/entries/arch.conf
+
+    # check that everything is fine
+    cat /boot/loader/entries/arch.conf
+``` 
+N.B. `/dev/sda3` is the **root partition**
+
+#### Only for intel systems:
+``` bash
+    pacman -S intel-ucode
+``` 
+Add the entry in the *arch.conf* file
+``` bash
+    vim /boot/loader/entries/arch.conf
+
+    # type before the existing initrd:
+    initrd /intel-ucode.img
+``` 
+
+The final result should be something like this:
+
+``` bash
+    title Arch Linux
+    linux /vmlinuz-linux
+    initrd /intel-ucode.img
+    initrd /initramfs-linux.img
+    options root=PARTUUID=********-****-****-****-************ rw
+``` 
+
+#### Nvidia card support
+Install dkm modules
+``` bash
+sudo pacman -S linux-headers
+```
+
+Install specific drivers (in my case `nvidia` package)
+``` bash
+sudo pacman -S nvidia-dkms libglvnd nvidia-utils opencl-nvidia lib32-libglvnd lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings
+``` 
+
+Add nvidia drm to kernel modules
+``` bash
+vim /etc/mkinitcpio.conf
+
+# find MODULES=, and type:
+MODULES="nvidia nvidia_modeset nvidia_uvm nvidia_drm"
+``` 
+
+make sure that these modules are loaded while booting
+``` bash
+vim /boot/loader/entries/arch.conf
+
+# find options root=PARTUUID=********-****-****-****-************ rw, and type:
+options root=PARTUUID=********-****-****-****-************ rw nvidia-drm.modeset=1
+``` 
+
+Lastly, we need to make a pacman hook, so that any time the kernel is updated, it automatically adds the nvidia module.
+``` bash
+vim /etc/pacman.d/hooks/nvidia.hook
+
+# and type:
+[Trigger]
+Operation=Install
+Operation=Upgrade
+Operation=Remove
+Type=Package
+Target=nvidia
+
+[Action]
+Depends=mkinitcpio
+When=PostTransaction
+Exec=/usr/bin/mkinitcpio -P
+``` 
+
+### Method 2 - GRUB
+For first install grub
+``` bash    
     pacman -S grub efibootmgr
 ``` 
 
@@ -254,4 +374,26 @@ If yes, we can proceed with the grub configuration:
     exit
 ```
 
+### Method 3 - rEFInd
+Launch the install script
+``` bash
+    pacman -S refind-efi efibootmgr
+    refind-install --usedefault /dev/sda1 --alldrivers 
+```
+Check if the config file `/boot/refind_linux.conf` was correctly created.
+
+At this point we have to generate the config file
+``` bash
+    refind-mkrlconf
+```
+
+N.B. For dual boot sytems, in some cases, Windows behaves differently (low resolution boot screen, OEM logo replaced by Windows logo, black screen after boot screen, artifacting). If you face such issues, try setting `use_graphics_for +,windows` in `esp/EFI/refind/refind.conf` or adding graphics on to the Windows boot stanza.
+
+# 
+
 Now we can go back to the usb key with `exit` command and then `umount -R /mnt`, so we can safely `reboot`.
+
+Touchpad support:
+``` bash
+    sudo pacman -S xf86-input-synaptics
+```

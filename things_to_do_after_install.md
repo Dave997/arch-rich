@@ -47,9 +47,21 @@ This will remove unused packages (used during system installation)
 
 `pacman -Rns $(pacman -Qtdq)`
 
-## 6. Optimize pacman access speed
+## 6. Optimize pacman 
 
 `pacman-optimize`
+
+Add more colors to pacman outputs
+``` bash
+vi /etc/pacman.conf
+
+    #uncomment: 
+    Color
+    VerbosePkgLists
+
+    #add:
+    ILoveCandy
+```
 
 ## 7. Check for errors
 
@@ -86,3 +98,10 @@ Check arch wiki to find the rigth drivers: `https://wiki.archlinux.org/index.php
 sudo pacman -R lib32-mesa-libgl
 sudo pacman -S nvidia lib32-nvidia-libgl
 ```
+
+#
+
+For more detailed instructions on NVIDIA drivers cehck:  <br>
+`https://www.gloriouseggroll.tv/arch-linux-installing-and-compiling-mesa-git-and-llvm-svn-with-and-without-libglvnd/`
+
+From: `https://www.gloriouseggroll.tv/linux/`

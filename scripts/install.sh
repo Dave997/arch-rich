@@ -21,13 +21,12 @@ welcomemsg() { \
 #===============#
 
 # Initial check
+#[ $(ping -c 1 www.archlinux.org) -gt 0 ] && error "Please check internet connection"
 pacman -Syu --noconfirm --needed dialog ||  error "Please check if the following requirements have been met: 
     * Run as root 
     * Run on arch-based distro 
     * Available internet connection 
     * Arch keyring updated"
-
-#TODO: Check internet connectivity  ex: ping -c 1 www.archlinux.org
 
 # Welcome user.
 welcomemsg || error "User exited."
