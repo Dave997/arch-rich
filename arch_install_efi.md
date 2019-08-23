@@ -119,8 +119,7 @@ Check with ```lsblk``` that everything is mounted fine.
 Install all base packages in /mnt
 
 ``` bash
-    pacstrap /mnt base
-    pacstrap /mnt base-devel vim
+    pacstrap /mnt base base-devel vim sudo wget curl
 ```
 
 ## 6. Set-up Arch
@@ -162,6 +161,7 @@ Set language
     vim /etc/locale.conf #create new file
     #and type
         LANG=en_US.UTF-8
+        LC_COLLATE="C"   # to maintain alphabetic order inside dirs (ex: ls will display dotfiles first)
 
     export LANG=en_US.UTF-8
 ``` 
@@ -178,6 +178,9 @@ Set timezone
     # now we have to link /etc/localtime to the correct timezone
 
     ln -sf /usr/share/zoneinfo/Europe/Rome /etc/localtime
+
+    # Generate /etc/adjtime
+    hwclock --systohc
 ``` 
 
 Network configuration
@@ -213,7 +216,8 @@ Make sure that wifi-menu will work after reboot
 
 Enable DHCP
 ``` bash
-    systemctl enable dhcpcd@<interface>.service
+    systemctl start dhcpcd
+    systemctl enable dhcpcd
 ``` 
 
 Create an initial ramdisk based on the 'linux' preset.
