@@ -31,13 +31,14 @@ pacman -Syu --noconfirm --needed dialog ||  error "Please check if the following
 # Welcome user.
 welcomemsg || error "User exited."
 
-# Make scripts executable
 ls modules/ | grep .sh | while read line; do  
+    # Make scripts executable
     chmod +x modules/$line
+    # Run scripts
+    ./modules/$line
 done
 
-# Run scripts
-./modules/1-setup.sh
-./modules/2-custom_progs.sh
-./modules/3-graphic.sh
-./modules/4-hw_manager.sh
+echo ""
+echo "Congrats! Arch installation completed."
+echo "Now reboot and type 'xinit' to initialize Xorg, after that 'startx' to launch the GUI."
+echo ""

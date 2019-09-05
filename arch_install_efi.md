@@ -248,7 +248,7 @@ EDITOR=nano visudo
     # this should give already mounted error
 ```
 
-### Method 1 - Systemd-boot
+### Method 1 - Systemd-boot (Not tested on real hardware)
 Install bootloader
 ``` bash
     pacman -S efibootmgr
@@ -347,7 +347,7 @@ For first install grub
     pacman -S grub efibootmgr
 ``` 
 
-Now we have to create the efi directory
+Now we have to create the efi directory 
 ``` bash
     mkdir /boot/efi
     mount /dev/sda1 /boot/efi
