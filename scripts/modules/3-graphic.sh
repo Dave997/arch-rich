@@ -28,6 +28,7 @@ PKGS=(
 		'i3status'              # Generates status bar
 		'compton'			 	# screen composer manager
 		'slim'					# Login manager
+		'slim-themes'
 )
 
 for PKG in "${PKGS[@]}"; do
