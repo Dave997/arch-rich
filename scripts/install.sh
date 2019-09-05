@@ -18,6 +18,11 @@ welcomemsg() { \
 	dialog --title "Welcome!" --yes-label "Let's go!" --no-label "Exit" --yesno "This script will automatically install the i3-gaps on your Arch linux desktop.\\n\\n-Davide" 10 50 || { clear; exit; }
 }
 
+refreshkeys() { \
+	dialog --infobox "Refreshing Arch Keyring..." 4 40
+	pacman --noconfirm -Sy archlinux-keyring >/dev/null 2>&1
+}
+
 #===============#
 
 # Initial check
@@ -31,6 +36,9 @@ pacman -Syu --noconfirm --needed dialog ||  error "Please check if the following
 # Welcome user.
 welcomemsg || error "User exited."
 
+# Refresh Arch keyrings.
+refreshkeys || error "Error automatically refreshing Arch keyring. Consider doing so manually."
+
 ls modules/ | grep .sh | while read line; do  
     # Make scripts executable
     chmod +x modules/$line
@@ -38,7 +46,4 @@ ls modules/ | grep .sh | while read line; do
     ./modules/$line
 done
 
-echo ""
-echo "Congrats! Arch installation completed."
-echo "Now reboot and type 'xinit' to initialize Xorg, after that 'startx' to launch the GUI."
-echo ""
+dialog --title "Congrats! Arch installation completed." --msgbox "Now reboot and type 'xinit' to initialize Xorg, after that 'startx' to launch the GUI." 20 70

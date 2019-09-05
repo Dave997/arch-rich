@@ -1,14 +1,10 @@
 #!/usr/bin/env bash
 
-echo
-echo "INSTALLING SOFTWARE"
-echo
-
 PKGS=(
 
     # SYSTEM --------------------------------------------------------------
 
-    'linux-lts'             # Long term support kernel
+    # 'linux-lts'             # Long term support kernel
 
     # TERMINAL UTILITIES --------------------------------------------------
 
@@ -43,6 +39,8 @@ PKGS=(
     'zip'                   # Zip compression program
     'zsh'                   # ZSH shell
     'zsh-completions'       # Tab completion for ZSH
+    'texlive-most'          # LaTeX pacakges
+    'biber'                 # Package to handle latex bibliography
 
     # DISK UTILITIES ------------------------------------------------------
 
@@ -52,15 +50,22 @@ PKGS=(
     'gnome-disks'           # Disk utility
     'ntfs-3g'               # Open source implementation of NTFS file system
     'parted'                # Disk utility
+    'dosfstools'            # Allows your computer to access dos-like filesystems
+    'simple-mtpfs'	        # Enables the mounting of cell phones
 
     # GENERAL UTILITIES ---------------------------------------------------
 
     'catfish'               # Filesystem search
     'conky'                 # System information viewer
     'nemo'                  # Filesystem browser
-    'veracrypt'             # Disc encryption utility
+    #'veracrypt'             # Disc encryption utility
     'variety'               # Wallpaper changer
     'xfburn'                # CD burning application
+    'ranger'                # Terminal file explorer
+    'dunst'                 # Suckless notification system
+    'libnotify'             # Allows desktop notifications.
+    'arandr'                # UI for screen adjustment
+    'unclutter'             # Hides an inactive mouse
 
     # DEVELOPMENT ---------------------------------------------------------
 
@@ -101,7 +106,7 @@ PKGS=(
     'lollypop'              # Music player
     'simplescreenrecorder'  # Record your screen
     'vlc'                   # Video player
-    'xfce4-screenshooter'   # Screen capture.
+    'scrot'                 # Screen capture.
 
     # GRAPHICS AND DESIGN -------------------------------------------------
 
@@ -112,6 +117,7 @@ PKGS=(
     'nomacs'                # Image viewer
     'pngcrush'              # Tools for optimizing PNG images
     'ristretto'             # Multi image viewer
+    'xwobf'                 # Image pixel maker
 
     # PRODUCTIVITY --------------------------------------------------------
 
@@ -131,10 +137,6 @@ PKGS=(
 n=1
 for PKG in "${PKGS[@]}"; do
     dialog --title "Software suite Installation" --infobox "Installing \`$PKG\` ($n of ${#PKGS[@]}) from pacman" 5 70
-    sudo pacman -S "$PKG" --noconfirm --needed
+    sudo pacman -S "$PKG" --noconfirm --needed >/dev/null 2>&1
     n=$((n+1))
 done
-
-echo
-echo "Done!"
-echo

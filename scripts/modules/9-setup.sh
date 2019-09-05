@@ -1,12 +1,7 @@
 #!/usr/bin/env bash
 
-echo
-echo "FINAL SETUP AND CONFIGURATION"
 
-# ------------------------------------------------------------------------
-
-echo
-echo "Genaerating .xinitrc file"
+dialog --title "Final setup and configuration" --infobox "Generating .xinitrc file" 5 70
 
 # Generate the .xinitrc file so we can launch i3 from the
 # terminal using the "startx" command
@@ -24,43 +19,41 @@ exec i3
 exit 0
 EOF
 
+# cp ${HOME}/.xinitrc root/
+
 # ------------------------------------------------------------------------
 
-echo
-echo "Updating /bin/startx to use the correct path"
+dialog --title "Final setup and configuration" --infobox "Updating /bin/startx to use the correct path" 5 70
 
 # By default, startx incorrectly looks for the .serverauth file in our HOME folder.
 sudo sed -i 's|xserverauthfile=\$HOME/.serverauth.\$\$|xserverauthfile=\$XAUTHORITY|g' /bin/startx
 
 # ------------------------------------------------------------------------
 
-echo
-echo "Configuring LTS Kernel as a secondary boot option"
-
-sudo cp /boot/loader/entries/arch.conf /boot/loader/entries/arch-lts.conf
-sudo sed -i 's|Arch Linux|Arch Linux LTS Kernel|g' /boot/loader/entries/arch-lts.conf
-sudo sed -i 's|vmlinuz-linux|vmlinuz-linux-lts|g' /boot/loader/entries/arch-lts.conf
-sudo sed -i 's|initramfs-linux.img|initramfs-linux-lts.img|g' /boot/loader/entries/arch-lts.conf
+#echo
+#echo "Configuring LTS Kernel as a secondary boot option"
+#
+#sudo cp /boot/loader/entries/arch.conf /boot/loader/entries/arch-lts.conf
+#sudo sed -i 's|Arch Linux|Arch Linux LTS Kernel|g' /boot/loader/entries/arch-lts.conf
+#sudo sed -i 's|vmlinuz-linux|vmlinuz-linux-lts|g' /boot/loader/entries/arch-lts.conf
+#sudo sed -i 's|initramfs-linux.img|initramfs-linux-lts.img|g' /boot/loader/entries/arch-lts.conf
 
 # ------------------------------------------------------------------------
 
-echo
-echo "Configuring MAKEPKG to use all 8 cores"
+dialog --title "Final setup and configuration" --infobox "Configuring MAKEPKG to use all 8 cores" 5 70
 
 sudo sed -i -e 's|[#]*MAKEFLAGS=.*|MAKEFLAGS="-j$(nproc)"|g' makepkg.conf
 sudo sed -i -e 's|[#]*COMPRESSXZ=.*|COMPRESSXZ=(xz -c -T 8 -z -)|g' makepkg.conf
 
 # ------------------------------------------------------------------------
 
-echo
-echo "Setting laptop lid close to suspend"
+dialog --title "Final setup and configuration" --infobox "Setting laptop lid close to suspend" 5 70
 
 sudo sed -i -e 's|[# ]*HandleLidSwitch[ ]*=[ ]*.*|HandleLidSwitch=suspend|g' /etc/systemd/logind.conf
 
 # ------------------------------------------------------------------------
 
-echo
-echo "Disabling buggy cursor inheritance"
+dialog --title "Final setup and configuration" --infobox "Disabling buggy cursor inheritance" 5 70
 
 # When you boot with multiple monitors the cursor can look huge. This fixes it.
 sudo cat <<EOF > /usr/share/icons/default/index.theme
@@ -70,16 +63,14 @@ EOF
 
 # ------------------------------------------------------------------------
 
-echo
-echo "Increasing file watcher count"
+dialog --title "Final setup and configuration" --infobox "Increasing file watcher count" 5 70
 
 # This prevents a "too many files" error in Visual Studio Code
 echo fs.inotify.max_user_watches=524288 | sudo tee /etc/sysctl.d/40-max-user-watches.conf && sudo sysctl --system
 
 # ------------------------------------------------------------------------
 
-echo
-echo "Disabling Pulse .esd_auth module"
+dialog --title "Final setup and configuration" --infobox "Disabling Pulse .esd_auth module" 5 70
 
 # Pulse audio loads the `esound-protocol` module, which best I can tell is rarely needed.
 # That module creates a file called `.esd_auth` in the home directory which I'd prefer to not be there. So...
@@ -87,8 +78,7 @@ sudo sed -i 's|load-module module-esound-protocol-unix|#load-module module-esoun
 
 # ------------------------------------------------------------------------
 
-echo
-echo "Enabling bluetooth daemon and setting it to auto-start"
+dialog --title "Final setup and configuration" --infobox  "Enabling bluetooth daemon and setting it to auto-start" 5 70
 
 sudo sed -i 's|#AutoEnable=false|AutoEnable=true|g' /etc/bluetooth/main.conf
 sudo systemctl enable bluetooth.service
@@ -96,16 +86,14 @@ sudo systemctl start bluetooth.service
 
 # ------------------------------------------------------------------------
 
-echo
-echo "Enabling the cups service daemon so we can print"
+dialog --title "Final setup and configuration" --infobox  "Enabling the cups service daemon so we can print" 5 70
 
 systemctl enable org.cups.cupsd.service
 systemctl start org.cups.cupsd.service
 
 # ------------------------------------------------------------------------
 
-echo
-echo "Enabling Network Time Protocol so clock will be set via the network"
+dialog --title "Final setup and configuration" --infobox "Enabling Network Time Protocol so clock will be set via the network" 5 70
 
 sudo ntpd -qg
 sudo systemctl enable ntpd.service
@@ -113,15 +101,19 @@ sudo systemctl start ntpd.service
 
 # ------------------------------------------------------------------------
 
-echo
-echo "Applying Poly-Dark theme to GRUB"
+dialog --title "Final setup and configuration" --infobox "Enable SLiM DM" 5 70
 
-wget -O - https://github.com/shvchk/poly-dark/raw/master/install.sh | bash
+sudo systemctl enable slim.service
 
 # ------------------------------------------------------------------------
 
-echo
-echo "NETWORK SETUP"
+dialog --title "Final setup and configuration" --infobox  "Getting rid of the error beep sound..." 5 70
+rmmod pcspkr
+echo "blacklist pcspkr" > /etc/modprobe.d/nobeep.conf
+
+# ------------------------------------------------------------------------
+
+dialog --title "Final setup and configuration" --infobox "Network Setup" 5 70
 echo
 echo "Find your IP Link name:"
 echo
@@ -141,8 +133,3 @@ sudo ip link set dev ${LINK} down
 sudo systemctl enable NetworkManager.service
 sudo systemctl start NetworkManager.service
 sudo ip link set dev ${LINK} up
-
-echo "Done!"
-echo 
-echo "Reboot now..."
-echo

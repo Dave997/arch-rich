@@ -119,8 +119,7 @@ Check with ```lsblk``` that everything is mounted fine.
 Install all base packages in /mnt
 
 ``` bash
-    pacstrap /mnt base
-    pacstrap /mnt base-devel vim
+    pacstrap /mnt base base-devel vim sudo
 ```
 
 ## 6. Set-up Arch
@@ -162,6 +161,7 @@ Set language
     vim /etc/locale.conf #create new file
     #and type
         LANG=en_US.UTF-8
+        LC_COLLATE="C"   # to maintain alphabetic order inside dirs (ex: ls will display dotfiles first)
 
     export LANG=en_US.UTF-8
 ``` 
@@ -374,15 +374,7 @@ If yes, we can proceed with the grub configuration:
     exit
 ```
 
-### Method 3 - rEFInd (Not working)
-Launch the install script
-``` bash
-    pacman -S refind-efi efibootmgr
-    refind-install --usedefault /dev/sda1 --alldrivers 
-```
-Check if the config file `/boot/refind_linux.conf` was correctly created.
-
-N.B. For dual boot sytems, in some cases, Windows behaves differently (low resolution boot screen, OEM logo replaced by Windows logo, black screen after boot screen, artifacting). If you face such issues, try setting `use_graphics_for +,windows` in `esp/EFI/refind/refind.conf` or adding graphics on to the Windows boot stanza.
+N.B. for nvidia drivers see the previous method
 
 # 
 

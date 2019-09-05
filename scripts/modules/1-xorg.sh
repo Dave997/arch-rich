@@ -1,30 +1,20 @@
 #!/usr/bin/env bash
-#-------------------------------------------------------------------------
-#      _          _    __  __      _   _    
-#     /_\  _ _ __| |_ |  \/  |__ _| |_(_)__ 
-#    / _ \| '_/ _| ' \| |\/| / _` |  _| / _|
-#   /_/ \_\_| \__|_||_|_|  |_\__,_|\__|_\__| 
-#  Arch Linux Post Install Setup and Config
-#-------------------------------------------------------------------------
-
-echo
-echo "INSTALLING XORG"
-echo
 
 PKGS=(
         'xorg-server'           # XOrg server
         'xorg-apps'             # XOrg apps group
+        'xorg-xprop'            # Tool for detecting window properties
         'xorg-xinit'            # XOrg init
+        'xorg-xbacklight'	# Enables changing screen brightness levels.
+        'xwallpaper'	        # Sets the wallpaper
         'xf86-video-intel'      # 2D/3D video driver
         'mesa'                  # Open source version of OpenGL
         'xf86-input-libinput'   # Trackpad driver for Dell XPS
 )
 
+n=1
 for PKG in "${PKGS[@]}"; do
-    echo "INSTALLING: ${PKG}"
-    sudo pacman -S "$PKG" --noconfirm --needed
+    dialog --title "Xorg Installation" --infobox "Installing \`$PKG\` ($n of ${#PKGS[@]}) from pacman" 5 70
+    sudo pacman -S "$PKG" --noconfirm --needed >/dev/null 2>&1
+    n=$((n+1))
 done
-
-echo
-echo "Done!"
-echo

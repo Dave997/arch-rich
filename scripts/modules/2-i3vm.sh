@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-echo
-echo "INSTALLING i3vm"
-echo
-
 PKGS=(
         'i3-gaps'               # UI - Window manager
         'i3blocks'              # Status bar items
@@ -17,10 +13,6 @@ PKGS=(
 n=1
 for PKG in "${PKGS[@]}"; do
     dialog --title "i3vm Software Installation" --infobox "Installing \`$PKG\` ($n of ${#PKGS[@]})" 5 70
-    sudo pacman -S "$PKG" --noconfirm --needed
+    sudo pacman -S "$PKG" --noconfirm --needed >/dev/null 2>&1
     n=$((n+1))
 done
-
-echo
-echo "Done!"
-echo

@@ -1,15 +1,4 @@
 #!/usr/bin/env bash
-#-------------------------------------------------------------------------
-#      _          _    __  __      _   _    
-#     /_\  _ _ __| |_ |  \/  |__ _| |_(_)__ 
-#    / _ \| '_/ _| ' \| |\/| / _` |  _| / _|
-#   /_/ \_\_| \__|_||_|_|  |_\__,_|\__|_\__| 
-#  Arch Linux Post Install Setup and Config
-#-------------------------------------------------------------------------
-
-echo
-echo "INSTALLING PRINTER DRIVERS"
-echo
 
 PKGS=(
     'cups'                  # Open source printer drivers
@@ -20,11 +9,9 @@ PKGS=(
     'system-config-printer' # Printer setup  utility
 )
 
+n=1
 for PKG in "${PKGS[@]}"; do
-    echo "INSTALLING ${PKG}"
-    sudo pacman -S "$PKG" --noconfirm --needed
+    dialog --title "Printer drivers Installation" --infobox "Installing \`$PKG\` ($n of ${#PKGS[@]}) from pacman." 5 70
+    sudo pacman -S "$PKG" --noconfirm --needed >/dev/null 2>&1
+    n=$((n+1))
 done
-
-echo
-echo "Done!"
-echo

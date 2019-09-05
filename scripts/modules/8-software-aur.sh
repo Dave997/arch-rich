@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 
-echo
-echo "INSTALLING AUR SOFTWARE"
-echo
-
-echo "Installing yay: "
+dialog --title "AUR Software Installation" --infobox "Installing \`yay\` an AUR helper." 5 70
 
 git clone https://aur.archlinux.org/yay.git
 bash -c "cd yay; sudo makepkg --noconfirm --si >/dev/null 2>&1"
@@ -21,6 +17,7 @@ PKGS=(
     # TERMINAL UTILITIES --------------------------------------------------
 
     'hyper'                     # Terminal emulator built on Electron
+    'sc-im'                     # Excel-like terminal spreadsheet manager.
 
     # UTILITIES -----------------------------------------------------------
 
@@ -63,10 +60,6 @@ PKGS=(
 n=1
 for PKG in "${PKGS[@]}"; do
     dialog --title "AUR Software Installation" --infobox "Installing \`$PKG\` ($n of ${#PKGS[@]}) from the AUR." 5 70
-    yay -S $PKG
+    yay -S $PKG >/dev/null 2>&1
     n=$((n+1))
 done
-
-echo
-echo "Done!"
-echo
