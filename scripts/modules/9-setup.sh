@@ -29,12 +29,40 @@ dialog --title "Final setup and configuration" --infobox "Set italian keyboard o
 
 cat <<EOF > /etc/X11/xorg.conf.d/10-evdev.conf
 Section "InputClass"
+        Identifier "evdev pointer catchall"
+        MatchIsPointer "on"
+        MatchDevicePath "/dev/input/event*"
+        Driver "evdev"
+EndSection
+
+Section "InputClass"
         Identifier "evdev keyboard catchall"
         MatchIsKeyboard "on"
         MatchDevicePath "/dev/input/event*"
         Driver "evdev"
+        
+        # Keyboard layouts
         Option "XkbLayout" "it"
-        Option "XkbVariant" "nodeadkeys"
+        Option "XkbVariant" ", phonetic"
+        Option "XkbOptions" "grp:alt_shift_toggle, grp_led:scroll, terminate:ctrl_alt_bksp"
+EndSection
+
+Section "InputClass"
+        Identifier "evdev touchpad catchall"
+        MatchIsTouchpad "on"
+        MatchDevicePath "/dev/input/event*"
+        Driver "evdev"
+EndSection
+EOF
+
+cat <<EOF > /etc/X11/xorg.conf.d/00-keyboard.conf
+Section "InputClass"
+        Identifier "system-keyboard"
+        MatchIsKeyboard "on"
+        Option "XkbLayout" "it"
+        Option "XkbModel" "pc105"
+        Option "XkbVariant" ",dvorak"
+        Option "XkbOptions" "grp:alt_shift_toggle"
 EndSection
 EOF
 
