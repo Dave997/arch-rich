@@ -13,6 +13,7 @@ PKGS=(
 
     'menulibre'                 # Menu editor
     'gtkhash'                   # Checksum verifier
+    'polybar'                   # Status Bar
 
     # TERMINAL UTILITIES --------------------------------------------------
 

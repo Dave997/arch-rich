@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-
 dialog --title "Final setup and configuration" --infobox "Generating .xinitrc file" 5 70
 
 # Generate the .xinitrc file so we can launch i3 from the
@@ -25,7 +24,7 @@ cp ${HOME}/.xinitrc /home/davide    ## N.B. Modify with your username!
 
 # ------------------------------------------------------------------------
 
-dialog --title "Final setup and configuration" --infobox "Set italian keyboard on slim" 5 70
+dialog --title "Final setup and configuration" --infobox "Set italian keyboard" 5 70
 
 cat <<EOF > /etc/X11/xorg.conf.d/10-evdev.conf
 Section "InputClass"

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+#========== PACMAN EASTER-EGG ==========#
 
 dialog --title "Personalization" --infobox "Make pacman and yay colorful and adds eye candy on the progress bar" 5 70
 
@@ -8,10 +9,14 @@ grep "ILoveCandy" /etc/pacman.conf >/dev/null || sed -i "/#VerbosePkgLists/a ILo
 
 # ------------------------------------------------------------------------
 
+#=========== FIREFOX THEME ===========#
+
 dialog --title "Personalization" --infobox "Install the LARBS Firefox profile in ~/.mozilla/firefox/" 5 70 #TODO
 #putgitrepo "https://github.com/LukeSmithxyz/mozillarbs.git" "${HOME}/.mozilla/firefox"
 
 # ------------------------------------------------------------------------
+
+#============= GRUB THEME ============#
 
 dialog --title "Personalization" --infobox  "Applying Poly-Dark theme to GRUB" 5 70
 
@@ -73,11 +78,14 @@ fi
 
 # ------------------------------------------------------------------------
 
+#============= SLiM THEME ============#
+
 dialog --title "Personalization" --infobox "Applying Overlay theme to SLiM" 5 70
 
 sudo cp -r themes/slim_themes-master/themes/* /usr/share/slim/themes
 
 sed -i 's/current_theme       default/current_theme       overlay/g' /etc/slim.conf
+sed -i 's/[#]default_user        simone/default_user        davide/g' /etc/slim.conf  ## N.B. Modify with your username!
 
 # ------------------------------------------------------------------------
 
