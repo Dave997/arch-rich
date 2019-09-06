@@ -4,7 +4,7 @@ PKGS=(
 
     # SYSTEM --------------------------------------------------------------
 
-    # 'linux-lts'             # Long term support kernel
+    'linux-lts'             # Long term support kernel
 
     # TERMINAL UTILITIES --------------------------------------------------
 
@@ -112,12 +112,11 @@ PKGS=(
 
     'gcolor2'               # Colorpicker
     'gimp'                  # GNU Image Manipulation Program
-    'inkscape'              # Vector image creation app
+    #'inkscape'              # Vector image creation app
     'imagemagick'           # Command line image manipulation tool
     'nomacs'                # Image viewer
     'pngcrush'              # Tools for optimizing PNG images
     'ristretto'             # Multi image viewer
-    'xwobf'                 # Image pixel maker
 
     # PRODUCTIVITY --------------------------------------------------------
 
@@ -125,8 +124,9 @@ PKGS=(
     'hunspell'              # Spellcheck libraries
     'hunspell-en'           # English spellcheck library
     'libreoffice-fresh'     # Libre office with extra features
-    'mousepad'              # XFCE simple text editor
+    'gedit'                 # Simple text editor
     'xpdf'                  # PDF viewer
+    'evince'                # PDF viewer
 
     # VIRTUALIZATION ------------------------------------------------------
 

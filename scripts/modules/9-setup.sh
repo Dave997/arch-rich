@@ -15,11 +15,28 @@ if [ -d /etc/X11/xinit/xinitrc.d ] ; then
     unset f
 fi
 
+setxkbmap it
 exec i3
 exit 0
 EOF
 
-# cp ${HOME}/.xinitrc root/
+cp ${HOME}/.xinitrc /home/davide    ## N.B. Modify with your username!
+
+
+# ------------------------------------------------------------------------
+
+dialog --title "Final setup and configuration" --infobox "Set italian keyboard on slim" 5 70
+
+cat <<EOF > /etc/X11/xorg.conf.d/10-evdev.conf
+Section "InputClass"
+        Identifier "evdev keyboard catchall"
+        MatchIsKeyboard "on"
+        MatchDevicePath "/dev/input/event*"
+        Driver "evdev"
+        Option "XkbLayout" "it"
+        Option "XkbVariant" "nodeadkeys"
+EndSection
+EOF
 
 # ------------------------------------------------------------------------
 
@@ -30,13 +47,12 @@ sudo sed -i 's|xserverauthfile=\$HOME/.serverauth.\$\$|xserverauthfile=\$XAUTHOR
 
 # ------------------------------------------------------------------------
 
-#echo
-#echo "Configuring LTS Kernel as a secondary boot option"
-#
-#sudo cp /boot/loader/entries/arch.conf /boot/loader/entries/arch-lts.conf
-#sudo sed -i 's|Arch Linux|Arch Linux LTS Kernel|g' /boot/loader/entries/arch-lts.conf
-#sudo sed -i 's|vmlinuz-linux|vmlinuz-linux-lts|g' /boot/loader/entries/arch-lts.conf
-#sudo sed -i 's|initramfs-linux.img|initramfs-linux-lts.img|g' /boot/loader/entries/arch-lts.conf
+dialog --title "Final setup and configuration" --infobox "Configuring LTS Kernel as a secondary boot option" 5 70
+
+sudo cp /boot/loader/entries/arch.conf /boot/loader/entries/arch-lts.conf
+sudo sed -i 's|Arch Linux|Arch Linux LTS Kernel|g' /boot/loader/entries/arch-lts.conf
+sudo sed -i 's|vmlinuz-linux|vmlinuz-linux-lts|g' /boot/loader/entries/arch-lts.conf
+sudo sed -i 's|initramfs-linux.img|initramfs-linux-lts.img|g' /boot/loader/entries/arch-lts.conf
 
 # ------------------------------------------------------------------------
 
